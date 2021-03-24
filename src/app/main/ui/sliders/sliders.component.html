@@ -1,0 +1,180 @@
+<div id="material-colors" class="page-layout simple tabbed" fxLayout="column">
+
+    <!-- HEADER -->
+    <div class="header accent p-24 h-160" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="row"
+        fxLayoutAlign.gt-xs="space-between center">
+
+        <div fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="column" fxLayoutAlign.gt-xs="center start">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="secondary-text s-18">home</mat-icon>
+                <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                <span class="secondary-text">Sliders</span>
+            </div>
+            <div class="h1 mt-16">Sliders</div>
+        </div>
+
+        <a mat-raised-button *ngIf="pageType !='new'" class="reference-button mt-16 mt-sm-0"
+            [routerLink]="'/ui/sliders/new'">
+
+            <span>Add new slider</span>
+        </a>
+
+        <a mat-raised-button *ngIf="pageType ==='new'" class="reference-button mt-16 mt-sm-0" (click)="addSliders()">
+
+            <span>Add</span>
+        </a>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <mat-tab-group *ngIf="pageType !='new'" class="color-tabs" dynamicHeight="true"
+            (selectedTabChange)="selectSlider($event)">
+
+            <mat-tab *ngFor="let slider of sliders" label="{{slider.id}}">
+                <ng-template mat-tab-label>
+                    <span class="text-capitalize">{{slider.slider_name}}</span>
+                </ng-template>
+            </mat-tab>
+
+
+        </mat-tab-group>
+
+        <div *ngIf="pageType !='new'" class="color-tabs-content p-24" fxLayout="column">
+
+
+            <div class="new-color__container" *ngIf="slider?.length == 0">
+                <mat-form-field *ngIf="!background" appearance="outline" floatLabel="always"   class="w-100-p">
+                    <mat-label>h1</mat-label>
+                    <input matInput placeholder="H1 title" name="productLink" type="text" [(ngModel)]="h1">
+                    <span matPrefix>&nbsp;</span>
+                </mat-form-field>
+                <mat-form-field *ngIf="!background" appearance="outline" floatLabel="always"   class="w-100-p">
+                    <mat-label>h3</mat-label>
+                    <input matInput placeholder="H3 title" name="productLink" type="text" [(ngModel)]="h3">
+                    <span matPrefix>&nbsp;</span>
+                </mat-form-field>
+                <mat-form-field *ngIf="!background" appearance="outline" floatLabel="always"   class="w-100-p">
+                    <mat-label>Product Link</mat-label>
+                    <input matInput placeholder="e.g: /produs/vopsea-decorativa-cu-efect-de-matase-sau-cu-nisip-oystar-tixe" name="productLink" type="text" [(ngModel)]="productLink">
+                    <span matPrefix>&nbsp;</span>
+                </mat-form-field>
+
+                <div *ngIf="!background" class="file-uploader">
+                    <label for="">Add slider background image</label>
+                    <input hidden type="file" #fileInput (change)="sliderBg($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <img *ngIf="slider_image" [src]="slider_image">
+                </div>
+
+                <div *ngIf="!product_image" class="file-uploader">
+                    <label for="">Add slider product image</label>
+                    <input hidden type="file" #fileInput (change)="sliderProductImage($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+
+                </div>
+
+                <div *ngIf="!thumb" class="file-uploader">
+                    <label for="">Add product thumb image</label>
+                    <input hidden type="file" #fileInput (change)="productImage($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    
+                </div>
+                <div class="slider-view">
+                    <img *ngIf="background" src="{{background}}" alt="">
+                    <img *ngIf="product_image" src="{{product_image}}" alt="" class="product-slider-image auto">
+                    <img *ngIf="thumb" src="{{thumb}}" alt="" class="product-slider-image auto">
+                </div>
+
+
+                <button [disabled]="!addNewSlider" mat-raised-button (click)="addSlider()" type="button" color="accent">
+                    Save
+                </button>
+
+            </div>
+
+            <div class="new-color__container" *ngIf="slider?.length > 0">
+                <div *ngIf="!slider[0]?.background" class="file-uploader">
+                    <label for="">Add slider background image</label>
+                    <input hidden type="file" #fileInput (change)="sliderBg($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    
+                </div>
+
+                <div *ngIf="!slider[0]?.product" class="file-uploader">
+                    <label for="">Add slider product image</label>
+                    <input hidden type="file" #fileInput (change)="sliderProductImage($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    
+                </div>
+
+                <div *ngIf="!slider[0]?.thumb" class="file-uploader">
+                    <label for="">Add product thumb image</label>
+                    <input hidden type="file" #fileInput (change)="productImage($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    
+                </div>
+
+                <div class="slider-view">
+                    <img *ngIf="slider[0]?.background" [src]="slider[0]?.background">
+
+                    <img *ngIf="slider[0]?.product" [src]="slider[0]?.product" class="product-slider-image auto">
+                    <img *ngIf="slider[0]?.thumb" [src]="slider[0]?.thumb" class="product-slider-image auto">
+    
+                </div>
+
+               
+                <button mat-raised-button *ngIf="!slider[0]?.background && !slider[0]?.product && !slider[0]?.thumb"
+                    (click)="addSlider(slider[0]?.id)" type="button" color="accent">
+                    Save
+                </button>
+
+                <button mat-raised-button
+                    (click)="deleteSlider(slider[0]?.background, slider[0]?.product)" type="button" color="red">
+                    Delete
+                </button>
+
+               
+
+            </div>
+
+        </div>
+
+
+
+
+        <mat-form-field *ngIf="pageType === 'new'" appearance="outline" floatLabel="always" fxFlex="50" class="p-24">
+            <mat-label>Slider name</mat-label>
+            <input matInput placeholder="Slider name" name="slider_name" type="text" [(ngModel)]="slider_name">
+            <span matPrefix>&nbsp;</span>
+        </mat-form-field>
+
+    </div>
+    <!-- / CONTENT -->
+</div>

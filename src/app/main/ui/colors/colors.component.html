@@ -1,0 +1,150 @@
+<div id="material-colors" class="page-layout simple tabbed" fxLayout="column">
+
+    <!-- HEADER -->
+    <div class="header accent p-24 h-160" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="row"
+        fxLayoutAlign.gt-xs="space-between center">
+
+        <div fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="column" fxLayoutAlign.gt-xs="center start">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="secondary-text s-18">home</mat-icon>
+                <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                <span class="secondary-text">Palettes</span>
+            </div>
+            <div class="h1 mt-16">Colors</div>
+        </div>
+
+        <a mat-raised-button *ngIf="pageType !='new'" class="reference-button mt-16 mt-sm-0"
+            [routerLink]="'/ui/colors/new'">
+
+            <span>Add new palette</span>
+        </a>
+
+        <a mat-raised-button *ngIf="pageType ==='new'" class="reference-button mt-16 mt-sm-0" (click)="addPalette()">
+
+            <span>Add</span>
+        </a>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <mat-tab-group *ngIf="pageType !='new'" class="color-tabs" dynamicHeight="true"
+            (selectedTabChange)="selectColor($event)">
+
+            <mat-tab *ngFor="let color of palettes" label="{{color.id}}">
+                <ng-template mat-tab-label>
+                    <span class="text-capitalize">{{color.palette_name}}</span>
+                </ng-template>
+            </mat-tab>
+
+
+        </mat-tab-group>
+
+        <div *ngIf="pageType !='new'" class="color-tabs-content p-24" fxLayout="column">
+
+
+
+            <div class="color-header colored-bg p-8" [ngClass]="selectedColor" fxLayout="column">
+
+                <!-- <div fxLayout="row">
+                    <h3 class="text-capitalize p-8" fxFlex="30">{{selectedColor}}</h3>
+                    <h4 class="p-8" fxFlex="30">Background and Color</h4>
+                    <h4 class="p-8" fxFlex="30">Background only</h4>
+                    <h4 class="p-8" fxFlex="128px">Color only</h4>
+                </div> -->
+
+            </div>
+
+
+
+            <div class="color" fxLayout="column" fxFlex="1 0 auto"
+                *ngIf="selectedColor != 'black' && selectedColor != 'white'">
+               
+                <div class="colored-bg p-8" *ngFor="let color of colors" fxFlex="1 0 auto" fxLayout="row"
+                    fxLayout.sm="column" [ngClass]="selectedColor + '-' + hue" [ngStyle]="{ 'background-image': 'url(' + color.color_image + ')'}">
+                    <div class="bg" [attr.data-image]="color.color_image"></div>
+                    <img *ngIf="color.color_image.includes('http')" src="{{color.color_image}}" alt="">
+                    <div class="bg-color" *ngIf="color.color_image.includes('#')" [ngStyle]="{'background-color':color.color_image}"></div>
+                    <div class="p-8"  fxFlex="30" fxLayoutAlign="start center">{{color.color}}</div>
+
+                    <!-- <div class="colored-bg p-8" [ngClass]="selectedColor + '-' + hue" fxFlex="30">
+                        <div class="pb-4">.{{selectedColor + '-' + hue}}</div>
+                        <div class="secondary-text pb-4">.secondary-text</div>
+                        <div class="hint-text pb-4">.hint-text, .disabled-text</div>
+                        <div class="divider">.divider</div>
+                    </div> -->
+
+
+                </div>
+            </div>
+            <!-- <mat-checkbox style="display: none;" *ngIf="BaseColorID || new" class="mt-24" [checked]="hasBaseColor" (change)="hasBaseColor = !hasBaseColor">
+                This pallete has base colors?
+            </mat-checkbox>
+            <div class="new-color__container" *ngIf="hasBaseColor">
+                
+                <mat-form-field appearance="outline" floatLabel="always" fxFlex="50" class="p-24">
+                    <mat-label>Base color name</mat-label>
+                    <input matInput placeholder="Color name" name="base_color" type="text" [(ngModel)]="base_color">
+                    <span matPrefix>&nbsp;</span>
+                </mat-form-field>
+                <div class="file-uploader">
+                    <label for="">Add base color image</label>
+                    <input hidden type="file" #fileInput
+                        (change)="fileChange($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button"
+                        (click)="fileInput.click()" aria-label="Add file"
+                        [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <img *ngIf="base_image" [src]="base_image" >
+                </div>
+            </div> -->
+            <div class="new-color__container">
+                <mat-form-field *ngIf="addNewColor" appearance="outline" floatLabel="always" fxFlex="50" class="p-24">
+                    <mat-label>Color name</mat-label>
+                    <input matInput placeholder="Color name" name="color_name" type="text" [(ngModel)]="color_name">
+                    <span matPrefix>&nbsp;</span>
+                </mat-form-field>
+                <div *ngIf="addNewColor" class="file-uploader">
+                    <label for="">Add color image</label>
+                    <input hidden type="file" #fileInput
+                        (change)="fileChange($event)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button"
+                        (click)="fileInput.click()" aria-label="Add file"
+                        [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <img *ngIf="color_image" [src]="color_image" >
+                </div>
+                
+                
+                    
+                
+                <!-- <div *ngIf="info.datasheet" class="file-uploader">
+                    <label>{{datasheet}}</label>
+                </div> -->
+            </div>
+            
+            <button *ngIf="!addNewColor" mat-raised-button (click)="addNewColorFn()" type="button" color="accent">
+                Add a new color
+            </button>
+
+            <button *ngIf="addNewColor" mat-raised-button (click)="addColor()" type="button" color="accent">
+                Add color
+            </button>
+        </div>
+
+
+        <mat-form-field *ngIf="pageType === 'new'" appearance="outline" floatLabel="always" fxFlex="50" class="p-24">
+            <mat-label>Palette name</mat-label>
+            <input matInput placeholder="Pallete name" name="palette_name" type="text" [(ngModel)]="palette_name">
+            <span matPrefix>&nbsp;</span>
+        </mat-form-field>
+
+    </div>
+    <!-- / CONTENT -->
+</div>

@@ -1,0 +1,78 @@
+:host {
+
+    .content {
+
+        .color-tabs-content {
+
+            .color-header {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
+            .color {
+
+                .fg-box {
+                    background-color: white;
+                }
+            }
+
+            .colored-bg {
+                transition: background-color 400ms ease;
+            }
+        }
+    }
+}
+
+.colored-bg {
+    align-items: center;
+    margin-bottom: 20px;
+
+    img, .bg-color {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.slider-view {
+    display: flex;
+    width: 100%;
+    position: relative;
+    margin: 16px 0;
+
+    .product-slider-image {
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 200px;
+        height: fit-content;
+        margin: auto;
+        display: flex;
+
+        &.auto {
+            height: auto;
+        }
+
+        .product-image-action {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+    }
+
+    .remove-background-button, .remove-product-button {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        z-index: 9;
+        background-color: red;
+        color: #fff;
+        border-radius: 50%;
+    }
+}
+
+.file-uploader label{
+    margin-right: 40px;
+}

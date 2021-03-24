@@ -1,0 +1,487 @@
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/apps/e-commerce/products'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="product-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img *ngIf="product.image_url" [src]="product.image_url">
+                    <img *ngIf="product.additional_images[0]" [src]="product.additional_images[0].url">
+                    <img *ngIf="!product.additional_images[0]"
+                        [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{product.product_name}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        New Product
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Product Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <button [disabled]="disabled" mat-raised-button class="save-product-button" [disabled]="productForm.invalid"
+                *ngIf="pageType ==='new'" (click)="addProduct()">
+                <span>ADD</span>
+            </button>
+
+            <!-- <button mat-raised-button class="save-product-button"
+                [disabled]="productForm.invalid || productForm.pristine" *ngIf="pageType ==='edit'"
+                (click)="saveProduct()">
+                <span>SAVE</span>
+            </button> -->
+            <button mat-raised-button class="save-product-button"
+               *ngIf="pageType ==='edit'"
+                (click)="saveProduct()">
+                <span>SAVE</span>
+            </button>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="productForm" [formGroup]="productForm" class="product w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Product Name</mat-label>
+                                    <input matInput placeholder="Product Name" name="name"
+                                        formControlName="product_name" required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Product Description</mat-label>
+                                    <textarea matInput placeholder="Product Description" name="description"
+                                        formControlName="description" rows="5">
+                                    </textarea>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>SKU</mat-label>
+                                    <input matInput placeholder="Product code" name="name"
+                                        formControlName="sku">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Brand</mat-label>
+                                    <input matInput placeholder="Brand name" name="brand"
+                                        formControlName="brand">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Categories</mat-label>
+                                    <mat-select #categoryList formControlName="categories" 
+                                        [(ngModel)]="currentCategory" (selectionChange)="getSubcategories(pageType == 'edit' ? $event : '')">
+                                        <mat-option *ngFor="let category of categories" [value]="pageType == 'edit' ? category.id : category">
+                                            {{category.category_name}}
+                                        </mat-option>
+                                    </mat-select>
+
+                                </mat-form-field>
+                                <mat-form-field *ngIf="subcategories" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Subcategories</mat-label>
+                                    <mat-select formControlName="subcategories" [(ngModel)]="currentSubcategory"
+                                        (selectionChange)="getSubcategoryId($event)" >
+                                        <mat-option *ngFor="let subcategory of subcategories" [value]="pageType == 'edit' ? subcategory.id : subcategory">
+                                            {{subcategory.subcategory_name}}
+                                        </mat-option>
+                                    </mat-select>
+
+                                </mat-form-field>
+
+
+
+                                <mat-checkbox class="mt-24" [checked]="isActive" (change)="isActive = !isActive">
+                                    Active product
+                                </mat-checkbox>
+                                
+                                <mat-checkbox class="mt-24 ml-24" [checked]="featured" (change)="featured = !featured">
+                                    Is a featured product?
+                                </mat-checkbox>
+
+                                <mat-checkbox class="mt-24 ml-24" [checked]="categoryFeatured" (change)="categoryFeatured = !categoryFeatured">
+                                    Is a category featured product?
+                                </mat-checkbox>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Product Images">
+                            
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <h4>Add new images</h4>
+                                    <div class="col-12 rmpm dropzone" appDrag (files)="filesDropped($event)">
+                                        <div class="text-wrapper">
+                                            <div class="centered">Drop your file here!</div>
+                                        </div>
+                                    </div>
+                                    <!--droped image preview-->
+                                    <div *ngFor="let file of productUploadImages">
+                                        <img *ngIf="file" [src]="file" width="100px" height="100px">
+                                    </div>
+
+
+
+                                    <div *ngFor="let image of product.additional_images">
+                                        
+                                        <div *ngIf="product.additional_images.length > 0" class="product-image"
+                                            fxlayout="row" fxLayoutAlign="center center">
+                                            <img class="media" [src]="image.url">
+                                        </div>
+                                    </div>
+                                    <div class="images-in-db">
+                                        <h4>Additional Images</h4>
+                                        <ul>
+                                            <li *ngFor="let dbImage of additional_images">
+                                                <a class="delete" (click)="deleteImage(dbImage.id)">Delete</a>
+                                                <img [src]="dbImage.image_url">
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Pricing">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <section class="info-section"
+                                    *ngFor="let info of informationValues; let infoIndex = index;">
+                                    <div class="info-section__item">
+                                        <a (click)="deleteQnt(info, product.id)">delete</a>
+                                        <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                            class="pr-4">
+                                            <mat-label>Quantity</mat-label>
+                                            <input matInput placeholder="Quantity" name="info.quantity_{{infoIndex}}"
+                                                [(ngModel)]="info.quantity" [ngModelOptions]="{standalone: true}"
+                                                type="text">
+                                            <span matPrefix>&nbsp;</span>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                            class="pr-4">
+                                            <mat-label>UM</mat-label>
+                                            <input matInput placeholder="ex: Kg, L, ml, cm" name="info.um_{{infoIndex}}"
+                                                [(ngModel)]="info.um" [ngModelOptions]="{standalone: true}" type="text">
+                                            <span matPrefix>&nbsp;</span>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                                class="pr-4">
+                                                <mat-label>Old price for </mat-label>
+                                                <input matInput [(ngModel)]="info.old_price" [ngModelOptions]="{standalone: true}" placeholder="Old price"
+                                                    name="info.old_price_{{infoIndex}}"
+                                                    
+                                                    type="number">
+                                                <span matPrefix>&nbsp;</span>
+
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                                class="pr-4">
+                                                <mat-label>Price </mat-label>
+                                                <input matInput [(ngModel)]="info.price" [ngModelOptions]="{standalone: true}" placeholder="Price"
+                                                    name="info.price_{{infoIndex}}"
+                                                    type="number">
+                                                <span matPrefix>&nbsp;</span>
+                                            </mat-form-field>
+                                    </div>
+                                    <!-- <div class="info-section__item">
+                                        <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                            class="pr-4">
+
+                                            <mat-label>Color palette</mat-label>
+
+                                            <mat-select [(ngModel)]="info.palette" required
+                                                [ngModelOptions]="{standalone: true}"
+                                                (selectionChange)="getColors($event, infoIndex)">
+                                                <mat-option *ngFor="let palette of palettes" [value]="palette.id">
+                                                    {{palette.palette_name}}
+                                                </mat-option>
+                                            </mat-select>
+
+                                        </mat-form-field>
+                                        
+                                        <div *ngIf="!info.datasheet" class="file-uploader">
+                                            <label for="">Add datasheet</label>
+                                            <input hidden type="file" #fileInput
+                                                (change)="fileChange($event, infoIndex)" id="image_file_input"
+                                                accept=".pdf,.doc,.docx" />
+                                            <button mat-fab color="warn" class="add-file-button"
+                                                (click)="fileInput.click()" aria-label="Add file"
+                                                [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                                                <mat-icon>add</mat-icon>
+                                            </button>
+
+                                        </div>
+                                        <div *ngIf="info.datasheet" class="file-uploader">
+                                            <label>{{datasheet}}</label>
+                                        </div>
+                                        
+                                    </div> -->
+                                    <!-- <div fxLayout="column" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                                        *ngIf="colors">
+                                        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                                            *ngFor="let color of info.colors; let i = index">
+
+                                            <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                                class="pr-4">
+                                                <mat-label>Old price for {{color.name}}</mat-label>
+                                                <input matInput placeholder="Old price for {{color.name}}"
+                                                    name="colorValues_{{infoIndex}}_{{i}}.old_price"
+                                                    [ngModel]="color.old_price[i]" [ngModelOptions]="{standalone: true}"
+                                                    (ngModelChange)="changeOldPrice($event, color, infoIndex, i)"
+                                                    type="number">
+                                                <span matPrefix>&nbsp;</span>
+
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                                class="pr-4">
+                                                <mat-label>Price {{color.name}}</mat-label>
+                                                <input matInput placeholder="Price for {{color.name}}"
+                                                    name="colorValues_{{infoIndex}}_{{i}}.price"
+                                                    [ngModel]="color.price[i]" [ngModelOptions]="{standalone: true}"
+                                                    (ngModelChange)="changePrice($event, color, infoIndex, i)"
+                                                    type="number">
+                                                <span matPrefix>&nbsp;</span>
+                                            </mat-form-field>
+                                        </div>
+                                    </div> -->
+
+
+
+
+                                    <!-- <label>Address</label>
+                                           <input type="text" [(ngModel)]="address.address"
+                                             name="address_{{i}}"/>
+                                           <label>Street</label>
+                                           <input type="text" [(ngModel)]="address.street"
+                                             name="street_{{i}}"/>
+                                           <label>City</label>
+                                           <input type="text" [(ngModel)]="address.city"
+                                             name="city_{{i}}"/>
+                                           <label>Country</label>
+                                           <select [(ngModel)]="address.country" name="country_{{i}}" placeholder="India">
+                                                 <option value="india">India</option>
+                                                 <option value="usa">USA</option>
+                                                  <option value="england">England</option>
+                                           </select> -->
+                                </section>
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <button mat-raised-button (click)="addQuantity()" type="button" color="accent">
+                                        Add a new quantity
+                                    </button>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Colors">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <section class="info-section" >
+
+                                    <div class="info-section__item">
+                                        <mat-form-field appearance="outline" floatLabel="always" fxFlex="50"
+                                            class="pr-4">
+
+                                            <mat-label>Color palette</mat-label>
+
+                                            <mat-select 
+                                                [(ngModel)]="palette" formControlName="palette">
+                                                <mat-option [value]="0">
+                                                    No colors
+                                                </mat-option>
+                                                <mat-option  [value]="-1">
+                                                    NCS & RAL
+                                                </mat-option>
+                                                <mat-option *ngFor="let palette of palettes" [value]="palette.id">
+                                                    {{palette.palette_name}}
+                                                </mat-option>
+                                            </mat-select>
+
+                                        </mat-form-field>
+                                    </div>
+                                </section>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Datasheet">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <section class="info-section">
+                                    <div class="info-section__item">
+                                         <!-- ADD FILE BUTTON -->
+                                         <div *ngIf="!datasheet" class="file-uploader">
+                                            <label for="">Add datasheet</label>
+                                            <input hidden type="file" #fileInput
+                                                (change)="fileChange($event)" id="image_file_input"
+                                                accept=".pdf,.doc,.docx" />
+                                            <button mat-fab color="warn" class="add-file-button"
+                                                (click)="fileInput.click()" aria-label="Add file"
+                                                [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                                                <mat-icon>add</mat-icon>
+                                            </button>
+
+                                        </div>
+                                        <div *ngIf="datasheet" class="file-uploader">
+                                            <label>{{datasheet}}</label>
+                                        </div>
+                                        <!-- / ADD FILE BUTTON -->
+                                    </div>
+                                </section>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Complementary products">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <!-- <mat-form-field>
+                                    <mat-select #select1 multiple placeholder="Using Groups" [(value)]="selected">
+                                        <mat-select-filter *ngIf="select1.focused" [placeholder]="'Filtro'" [array]="selectedProducts" hasGroup="true" groupArrayName="values"
+                                         displayMember="value" (filteredReturn)="groups=$event"></mat-select-filter>
+                            
+                                        <mat-optgroup *ngFor="let group of groups" [label]="group.value">
+                                            <mat-option *ngFor="let option of group.values" [value]="option.id" color="accent">
+                                                {{ option.value }}
+                                            </mat-option>
+                                        </mat-optgroup>
+                            
+                            
+                                    </mat-select>
+                                </mat-form-field>   -->
+                               
+                               
+                                <mat-form-field style="width: 100%;">
+                                    <mat-label>Complementary Products</mat-label>
+                                    <mat-select formControlName="complementary_products" multiple>
+                                        <!-- <mat-select-search [formControl]="bankMultiFilterCtrl"></mat-select-search> -->
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="bankMultiFilterCtrl"></ngx-mat-select-search>
+                                          </mat-option>
+                                        
+                                        <mat-option *ngFor="let bank of filteredBanksMulti | async" [value]="bank.id">
+                                            {{bank.product_name}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                
+                                  <mat-list>
+                                   
+                                    <mat-list-item *ngFor="let product of complementary">
+                                        <mat-icon (click)="deleteComplementary(product.id)" mat-list-icon class="active-icon red-500 s-16 mr-16">close</mat-icon>
+                                        {{product.product_name}}
+                                    </mat-list-item>
+                                    
+                                  </mat-list>
+                                  
+                            </div>
+
+                        </mat-tab>
+
+
+                        <!-- <mat-tab label="Inventory">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>SKU</mat-label>
+                                    <input matInput placeholder="SKU" name="sku" formControlName="sku">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Quantity</mat-label>
+                                    <input matInput placeholder="Quantity" name="quantity" formControlName="quantity"
+                                        type="number">
+                                </mat-form-field>
+
+                            </div>
+
+                        </mat-tab> -->
+
+                        <!-- <mat-tab label="Shipping">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar fxLayout="column">
+
+                                <div fxLayout="row" fxLayoutAlign="space-between">
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Width</mat-label>
+                                        <input matInput placeholder="Width" name="Width" formControlName="width">
+                                        <span matSuffix>cm</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Height</mat-label>
+                                        <input matInput placeholder="Height" name="Height" formControlName="height">
+                                        <span matSuffix>cm</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Depth</mat-label>
+                                        <input matInput placeholder="Depth" name="Depth" formControlName="depth">
+                                        <span matSuffix>cm</span>
+                                    </mat-form-field>
+
+                                </div>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Weight</mat-label>
+                                    <input matInput placeholder="Weight" name="Weight" formControlName="weight">
+                                    <span matSuffix>kg</span>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Extra Shipping Fee</mat-label>
+                                    <input matInput placeholder="Extra Shipping Fee" name="extraShippingFee"
+                                        formControlName="extraShippingFee" type="number">
+                                    <span matPrefix>$&nbsp;</span>
+                                </mat-form-field>
+
+                            </div>
+
+                        </mat-tab> -->
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

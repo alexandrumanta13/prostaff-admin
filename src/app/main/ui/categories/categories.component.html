@@ -1,0 +1,119 @@
+<div id="material-colors" class="page-layout simple tabbed" fxLayout="column">
+
+    <!-- HEADER -->
+    <div class="header accent p-24 h-160" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="row"
+        fxLayoutAlign.gt-xs="space-between center">
+
+        <div fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="column" fxLayoutAlign.gt-xs="center start">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="secondary-text s-18">home</mat-icon>
+                <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                <span class="secondary-text">Categories</span>
+            </div>
+            <div class="h1 mt-16">Categories</div>
+        </div>
+
+        <!-- <a mat-raised-button *ngIf="pageType !='new'" class="reference-button mt-16 mt-sm-0"
+            [routerLink]="'/ui/sliders/new'">
+
+            <span>Add new slider</span>
+        </a> -->
+
+        <!-- <a mat-raised-button *ngIf="pageType ==='new'" class="reference-button mt-16 mt-sm-0" (click)="addSliders()">
+
+            <span>Add</span>
+        </a> -->
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <mat-tab-group *ngIf="pageType !='new'" class="color-tabs" dynamicHeight="true"
+            (selectedTabChange)="selectCategory($event)">
+
+            <mat-tab *ngFor="let category of categories" label="{{category.slug}}">
+                <ng-template mat-tab-label>
+                    <span class="text-capitalize">{{category.category_name}}</span>
+                </ng-template>
+            </mat-tab>
+
+
+        </mat-tab-group>
+
+        <div *ngIf="pageType !='new'" class="color-tabs-content p-24" fxLayout="column">
+
+
+            <div class="new-color__container" *ngIf="category?.length > 0">
+                <div *ngIf="!category[0]?.banner" class="file-uploader">
+                    <label for="">Add category image</label>
+                    <input hidden type="file" #fileInput (change)="categoryBanner($event, category[0]?.slug)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    
+                </div>
+
+               
+                <div class="slider-view">
+                    <img *ngIf="category[0]?.banner" [src]="category[0]?.banner">
+                </div>
+
+               
+             
+
+                <button mat-raised-button
+                    (click)="deleteBanner(category[0]?.banner, category[0]?.slug)" type="button" color="red">
+                    Delete
+                </button>
+
+               
+
+            </div>
+
+        </div>
+
+        <div *ngIf="pageType !='new'" class="color-tabs-content p-24" fxLayout="column">
+
+
+            <div class="new-color__container" *ngIf="category?.length > 0 && category[0]?.featured != null">
+                <div *ngIf="!category[0]?.featured" class="file-uploader">
+                    <label for="">Add category image homepage</label>
+                    <input hidden type="file" #fileInput (change)="categoryFeatured($event, category[0]?.slug)" id="image_file_input"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    <button mat-fab color="warn" class="add-file-button" (click)="fileInput.click()"
+                        aria-label="Add file" [@animate]="{value:'*', params:{delay:'300ms',scale:'0.2'}}">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    
+                </div>
+
+               
+                <div class="slider-view">
+                    <img *ngIf="category[0]?.featured" [src]="category[0]?.featured">
+                </div>
+
+               
+             
+
+                <button mat-raised-button
+                    (click)="deleteFeatured(category[0]?.featured, category[0]?.slug)" type="button" color="red">
+                    Delete
+                </button>
+
+               
+
+            </div>
+
+        </div>
+
+
+
+       
+
+    </div>
+    <!-- / CONTENT -->
+</div>
